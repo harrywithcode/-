@@ -1,0 +1,113 @@
+import java.util.*;
+
+public class PagesArrange {
+    public String[] displayPages(final int pageSize, final int itemsCount, final String[] inputItems) {
+        LinkedList<String> linkedList = new LinkedList<>(Arrays.asList(inputItems));
+
+        Set<String> visitedRecorder = new HashSet<>();
+        List<String> resultContainer = new ArrayList<>();
+
+        for (Iterator<String> itemsList = linkedList.iterator(); itemsList.hasNext();) {
+            String currentItem = itemsList.next();
+            String hostId = currentItem.split(",")[0];
+
+            if (!visitedRecorder.contains(hostId)) {
+                visitedRecorder.add(hostId);
+                resultContainer.add(currentItem);
+                itemsList.remove();
+            }
+
+            if (visitedRecorder.size() == pageSize) {
+                visitedRecorder = new HashSet<>();
+                itemsList = linkedList.iterator();
+                resultContainer.add("new page");
+            } else if (!itemsList.hasNext() && visitedRecorder.size() < pageSize) {
+                itemsList = linkedList.iterator();
+                int visitedRecorderSize = visitedRecorder.size();
+                visitedRecorder = new HashSet<>();
+                System.out.println("size " + visitedRecorderSize);
+
+                while (itemsList.hasNext() && visitedRecorderSize < pageSize) {
+                    currentItem = itemsList.next();
+                    resultContainer.add(currentItem);
+                    itemsList.remove();
+                    visitedRecorderSize++;
+                }
+                resultContainer.add("new page");
+            }
+        }
+
+        String[] result = new String[resultContainer.size()];
+        int index = 0;
+        for (String item : resultContainer) {
+            result[index++] = item;
+        }
+        return result;
+    }
+
+    private String[] readInput() {
+        List<String> inputDataReceiver = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            String pageSize = scanner.next();
+            String itemsCount = scanner.next();
+            String title = scanner.next();
+
+            while (scanner.hasNextInt()) {
+                inputDataReceiver.add(scanner.next());
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Scanner is closed and failed to scan input data");
+        }
+
+        String[] inputData = new String[inputDataReceiver.size()];
+        int index = 0;
+
+        for (String item : inputDataReceiver) {
+            inputData[index++] = item;
+        }
+        return inputData;
+    }
+
+    public static void main(String[] args) {
+        String[] strs = new String[]{
+                "1,28,300.1,SanFrancisco", //1
+                "2,5,209.1,SanFrancisco", //1
+                "3,7,208.1,SanFrancisco", //1
+                "1,8,207.1,SanFrancisco", //2
+                "1,10,206.1,Oakland", //3
+                "1,16,205.1,SanFrancisco", //4
+                "2,29,204.1,SanFrancisco", //2
+                "2,20,203.1,SanFrancisco", //3
+                "8,21,202.1,SanFrancisco", //1
+                "2,18,201.1,SanFrancisco", //4
+                "2,30,200.1,SanFrancisco", //5
+                "15,27,109.1,Oakland", //1
+                "10,13,108.1,Oakland", //2
+                "11,26,107.1,Oakland", //2
+                "12,9,106.1,Oakland", //2
+                "13,1,105.1,Oakland", //3
+                "22,17,104.1,Oakland", //3
+                "1,2,103.1,Oakland", //5
+                "28,24,102.1,Oakland", //3
+                "18,14,11.1,SanJose", //4
+                "6,25,10.1,Oakland", //4
+                "19,15,9.1,SanJose", //4
+                "3,19,8.1,SanJose", //5
+                "3,11,7.1,Oakland", //6
+                "27,12,6.1,Oakland", //5
+                "1,3,5.1,Oakland", //6
+                "25,4,4.1,SanJose", //5
+                "5,6,3.1,SanJose", //6
+                "29,22,2.1,SanJose", //6
+                "30,23,1.1,SanJose" //6
+        };
+
+        PagesArrange pagesArrange = new PagesArrange();
+        String[] result = pagesArrange.displayPages(5, 19, strs);
+
+        for (String str : result) {
+            System.out.println(str);
+        }
+    }
+}
