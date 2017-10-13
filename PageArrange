@@ -2,36 +2,43 @@ import java.util.*;
 
 public class PagesArrange {
     public String[] displayPages(final int pageSize, final int itemsCount, final String[] inputItems) {
-        LinkedList<String> linkedList = new LinkedList<>(Arrays.asList(inputItems));
+        /* Transform input data to linked list, so that remove() is O(1) with high performance. */
+        LinkedList<String> inputList = new LinkedList<>(Arrays.asList(inputItems));
 
         Set<String> visitedRecorder = new HashSet<>();
         List<String> resultContainer = new ArrayList<>();
 
-        for (Iterator<String> itemsList = linkedList.iterator(); itemsList.hasNext();) {
-            String currentItem = itemsList.next();
-            String hostId = currentItem.split(",")[0];
+        for (Iterator<String> inputIterator = inputList.iterator(); inputIterator.hasNext();) {
+            String currentItem = inputIterator.next();
+            final String hostId = currentItem.split(",")[0];
 
+            /* If this page doesn't have duplicated id with current host id, then just add this item to page
+            * and remove this item from input list.
+             */
             if (!visitedRecorder.contains(hostId)) {
                 visitedRecorder.add(hostId);
                 resultContainer.add(currentItem);
-                itemsList.remove();
+                inputIterator.remove();
             }
 
+            /* Exit cases*/
             if (visitedRecorder.size() == pageSize) {
+                /* Happy ending that page is filled up with unique host ids, reset host-id recorder and iterator. */
                 visitedRecorder = new HashSet<>();
-                itemsList = linkedList.iterator();
+                inputIterator = inputList.iterator();
                 resultContainer.add("new page");
-            } else if (!itemsList.hasNext() && visitedRecorder.size() < pageSize) {
-                itemsList = linkedList.iterator();
-                int visitedRecorderSize = visitedRecorder.size();
+            } else if (!inputIterator.hasNext() && visitedRecorder.size() < pageSize) {
+                /* Current page is not filled up with unique host ids. */
+                inputIterator = inputList.iterator();
+                int currentItemSize = visitedRecorder.size();
                 visitedRecorder = new HashSet<>();
-                System.out.println("size " + visitedRecorderSize);
 
-                while (itemsList.hasNext() && visitedRecorderSize < pageSize) {
-                    currentItem = itemsList.next();
+                /* Go back to head of re-edit input list and fill the left positions with duplicated host-ids.*/
+                while (inputIterator.hasNext() && currentItemSize < pageSize) {
+                    currentItem = inputIterator.next();
                     resultContainer.add(currentItem);
-                    itemsList.remove();
-                    visitedRecorderSize++;
+                    inputIterator.remove();
+                    currentItemSize++;
                 }
                 resultContainer.add("new page");
             }
