@@ -1,0 +1,58 @@
+import java.util.Map;
+import java.util.HashMap;
+
+public class ExpiredMap <K, V> {
+    private class Data {
+        private V value;
+        private long expiredTime;
+
+        public Data(V value, long duration) {
+            this.value = value;
+            this.expiredTime = System.currentTimeMillis() + duration;
+        }
+
+        public V getValue() {
+            return value;
+        }
+        public long getExpiredTime() {
+            return expiredTime;
+        }
+    }
+
+    private Map<K, Data> expiredMap = new HashMap<>();
+
+    public void put(final K key, final V value, final long duration) {
+        Data data = new Data(value, duration);
+        expiredMap.put(key, data);
+    }
+    public V get(final K key) {
+        if (!expiredMap.containsKey(key)) {
+            return null;
+        } else {
+            Data queried = expiredMap.get(key);
+            long expiredTime = queried.getExpiredTime();
+
+            if (expiredTime > System.currentTimeMillis()) {
+                return queried.getValue();
+            } else {
+                expiredMap.remove(key);
+                return null;
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        ExpiredMap map = new ExpiredMap();
+        map.put("test1", "1", 1000);
+        map.put("test2", "2", 10000);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(map.get("test1"));
+        System.out.println(map.get("test2"));
+    }
+}
