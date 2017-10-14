@@ -1,24 +1,30 @@
-public class HlightWord {
-	public String findKeyWord(final String input, final String keyWord) {
+public class FindWord {
+	public String findKey(final String input, fina String key) {
 		StringBuilder sb = new StringBuilder();
-		int head = 0;
+		int head = 0; //indeed,
+		boolean findKey = false;
 		
-		for (int i = 0; i < input.length() - keyWord.length() + 1; i++) {
-			if (input.charAt(i) == keyWord.charAt(0)) {
-				if (input.substring(i, i + keyWord).equals(keyWord)) {
-					if ((i == 0 || input.charAt(i - 1) == ' ' || !Character.isLetter(input.charAt(i - 1)))
-						&& (i == input.length() - keyWord.length() || input.charAt(i + keyWord) == ' ' || !Chrarcter.isLetter(input.charAt(i + keyWord)))) {
-							sb.append(input.substring(head, i);
-							sb.append(<b>);
-							sb.append(keyWord);
-							sb.append(</b>);
-							
-							head = i + keyWord;
-						}
+		for (int i = 0; i < input.length(); i++) {
+			if (input.charAt(i) == key.charAt(0)) {
+				if (input.substring(i, i + key.length()).equals(key)) {
+					if ((i == 0 || !Character.isLetter(input.charAt(i - 1))) 
+						&& (i == input.length() - key.length() || !Character.isLetter(input.charAt(i + key.length())))) {
+						sb.append(input.substring(head, i));
+						sb.append("<b>");
+						sb.append(key);
+						sb.append("<\b>");
+						
+						head = i + key.length();
+						findKey = true;
+					}
 				}
-				i = i + keyWord;
+				i = i + key.length();
 			}
 		}
-		return sb.toString();
+		if (findKey == false) {
+			return input;
+		} else {
+			return sb.toString();
+		}
 	}
 }
