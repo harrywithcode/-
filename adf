@@ -1,0 +1,47 @@
+import java.util.List;
+import java.util.ArrayList;
+
+public class SummaryRange {
+    public List<String> summaryRange(final int[] nums) {
+        List<String> result = new ArrayList<>();
+
+        if (nums.length == 0) {
+            return result;
+        }
+
+        int head = 0;
+        int currentStep = 0;
+
+        for (int i = 1; i < nums.length; i++) {
+            currentStep = nums[i] - nums[i - 1];
+
+            while (i < nums.length && nums[i] - nums[i - 1] == currentStep) {
+                i++;
+            }
+            result.add(summary(nums[head], nums[i - 1], currentStep));
+
+            if (i < nums.length) {
+                head = i;
+            }
+        }
+        return result;
+    }
+
+    private String summary(int start, int end, int step) {
+        if (start  == end) {
+            return start + "/0";
+        } else {
+            return start + "->" + end + "/" + step;
+        }
+    }
+
+    public static void main(String[] args) {
+        SummaryRange sr = new SummaryRange();
+        int[] nums = new int[]{1,2,3};
+        List<String> result = sr.summaryRange(nums);
+
+        for (String i : result) {
+            System.out.println(i);
+        }
+    }
+}
