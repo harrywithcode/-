@@ -1,30 +1,37 @@
-public class FindWord {
-	public String findKey(final String input, fina String key) {
-		StringBuilder sb = new StringBuilder();
-		int head = 0; //indeed,
-		boolean findKey = false;
-		
-		for (int i = 0; i < input.length(); i++) {
-			if (input.charAt(i) == key.charAt(0)) {
-				if (input.substring(i, i + key.length()).equals(key)) {
-					if ((i == 0 || !Character.isLetter(input.charAt(i - 1))) 
-						&& (i == input.length() - key.length() || !Character.isLetter(input.charAt(i + key.length())))) {
-						sb.append(input.substring(head, i));
-						sb.append("<b>");
-						sb.append(key);
-						sb.append("<\b>");
-						
-						head = i + key.length();
-						findKey = true;
-					}
-				}
-				i = i + key.length();
-			}
-		}
-		if (findKey == false) {
-			return input;
-		} else {
-			return sb.toString();
-		}
-	}
+public class HlightWord {
+    public String findKey(final String input, final String key) {
+        StringBuilder sb = new StringBuilder();
+        int head = 0; //indeed,
+        boolean findKey = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == key.charAt(0)) {
+                if (input.substring(i, i + key.length()).equals(key)) {
+                    if ((i == 0 || !Character.isLetter(input.charAt(i - 1)))
+                            && (i == input.length() - key.length() || !Character.isLetter(input.charAt(i + key.length())))) {
+                        sb.append(input.substring(head, i));
+                        sb.append("<b>");
+                        sb.append(key);
+                        sb.append("</b>");
+
+                        head = i + key.length();
+                        findKey = true;
+                        i = i + key.length();
+                    }
+                }
+            }
+        }
+        if (findKey == false) {
+            return input;
+        } else {
+            return sb.toString();
+        }
+    }
+    public static void main(String[] args) {
+        HlightWord hlightWord = new HlightWord();
+        String input = "a abc def";
+        String key = "abc";
+        String result = hlightWord.findKey(input, key);
+        System.out.println(result);
+    }
 }
