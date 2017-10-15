@@ -1,0 +1,29 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class WordBeforeIndex {
+    public List<String> findWords(final String input, final int index) {
+        List<String> result = new ArrayList<>();
+
+        int start = 0;
+        for (int i = 0; i <= index; i++) {
+            if (input.charAt(i) == ' ') {
+                if (start != i && !input.substring(start, i).equals(" ")) {
+                    result.add(input.substring(start, i));
+                }
+                start = i + 1;
+            }
+        }
+        return result;
+    }
+    public static void main(String[] args) {
+        WordBeforeIndex w = new WordBeforeIndex();
+        String input = "s   b sea haha  a ";
+        int index = 10;
+        List<String> result = w.findWords(input, index);
+
+        for (String str : result) {
+            System.out.println(str);
+        }
+    }
+}
