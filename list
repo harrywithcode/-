@@ -1,0 +1,37 @@
+import java.util.*;
+
+public class ListInList {
+    public List<List<Integer>> listInList(final List<Integer> input) {
+        List<List<Integer>> result = new ArrayList<>();
+        LinkedList<Integer> listInput = new LinkedList<>(input);
+
+        while (listInput.size() > 0) {
+            List<Integer> unit = new ArrayList<>();
+            Set<Integer> visitor = new HashSet<>();
+            int i = 0;
+
+            for (Iterator<Integer> iteratorInput = listInput.iterator(); iteratorInput.hasNext();) {
+                int current = iteratorInput.next();
+
+                if (!visitor.contains(current)) {
+                    visitor.add(current);
+                    unit.add(current);
+                    iteratorInput.remove();
+                }
+            }
+            result.add(unit);
+        }
+        return result;
+    }
+    public static void main(String[] args) {
+        ListInList listInList = new ListInList();
+        List<Integer> input = new ArrayList<>(Arrays.asList(1,1,1,2,2,3,4,5,6,2,3,1,4,6));
+        List<List<Integer>> result = listInList.listInList(input);
+        for (List<Integer> line : result) {
+            for (int i : line) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+    }
+}
