@@ -24,6 +24,9 @@ public class SummaryRange {
                 head = i;
             }
         }
+        if (head == nums.length - 1) {
+            result.add(summary(nums[head], nums[nums.length - 1], currentStep));
+        }
         return result;
     }
 
@@ -37,7 +40,7 @@ public class SummaryRange {
 
     public static void main(String[] args) {
         SummaryRange sr = new SummaryRange();
-        int[] nums = new int[]{1,2,3};
+        int[] nums = new int[]{1,2,3,5,7,9,11,15,20,25,26};
         List<String> result = sr.summaryRange(nums);
 
         for (String i : result) {
