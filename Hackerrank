@@ -1,0 +1,90 @@
+import java.util.*;
+
+class Game {
+    private int leap;
+    private int[] islands;
+    
+    public Game(int leap, int[] islands) {
+        this.leap = leap;
+        this.islands = islands;
+    }
+    public int getLeap() {
+        return leap;
+    }
+    public int[] getIslands() {
+        return islands;
+    }
+}
+
+public class Solution {
+    public List<Game> readInput() {
+        List<Game> streamDataReceiver = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            String queries = scanner.nextLine();
+            
+            while (scanner.hasNextLine()) {
+                int leap = Integer.valueOf(scanner.nextLine().split(" ")[1]);
+                String[] strIslands = scanner.nextLine().split(" ");
+
+                int[] islands = new int[strIslands.length];
+                for (int i = 0; i < islands.length; i++) {
+                    islands[i] = Integer.valueOf(strIslands[i]);
+                }
+                Game game = new Game(leap, islands);
+                streamDataReceiver.add(game);
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Scanner is closed and failed to scan input data");
+        }
+
+        return streamDataReceiver;
+    }
+    public boolean canWin(Game game) {
+        // Return true if you can win the game; otherwise, return false.
+        int leap = game.getLeap();
+        int[] islands = game.getIslands();
+        
+        Set<Integer> set = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        
+        queue.offer(0);
+        //set.add(0);
+        
+        while (!queue.isEmpty()) {
+            int index = queue.poll();
+            set.add(index);
+            
+            if (index == islands.length - 1 || (index + leap > islands.length - 1)) {
+                return true;
+            }
+            if (index > 0 && islands[index - 1] == 0 && !set.contains(index - 1)) {
+                queue.offer(index - 1);
+                //set.add(index - 1);
+            }
+            if (islands[index + leap] == 0 && !set.contains(index + leap)) {
+                queue.offer(index + leap);
+                //set.add(index + leap);
+            }
+            if (index < islands.length - 1 && islands[index + 1] == 0 && !set.contains(index + 1)) {
+                queue.offer(index + 1);
+                //set.add(index + 1);
+            }
+        }
+        return false;
+    }
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+        List<Game> input = solution.readInput();
+        
+        for (Game game : input) {
+            boolean isWin = solution.canWin(game);
+            
+            if (isWin) {
+                System.out.println("YES");
+            } else {
+                System.out.println("NO");
+            }
+        }
+    }
+}
