@@ -1,0 +1,115 @@
+package OA;
+
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+/**
+* The class contains three attributes that represent the base, power and value of the power number.
+ * The class also saves the relationship among base, power and value.
+*/
+class PowerNumber {
+    private long base;
+    private long power;
+    private long value;
+
+    public PowerNumber(long base, long power) {
+        this.base = base;
+        this.power = power;
+        this.value = (long)Math.pow(base, power);
+    }
+
+    public long getBase() {
+        return base;
+    }
+
+    public long getPower() {
+        return power;
+    }
+
+    public long getValue() {
+        return value;
+    }
+}
+
+public class Solution {
+    /* The base of power numbers starts from 2. */
+    private static final long BASE_INITIAL = 2L;
+    /* The power of power numbers starts from 2. */
+    private static final long POWER_INITIAL = 2L;
+
+    /**
+     * The method find the index of the power number.
+     * @param index The input index that is given by users.
+     * @return Optional<Long> The result contains value of power number by input index, or empty if there is an exception.
+     */
+    public Optional<Long> getPowerNumber(final long index) throws Exception {
+        Optional<Long> powerNumber = Optional.empty();
+
+        if (index < 0L) {
+            throw new Exception("Input is not valid");
+        }
+
+        /* Define a min-heap that sort the power numbers by their values.
+        If the value is equal, then sort by their bases. */
+        PriorityQueue<PowerNumber> queue = new PriorityQueue<>(new Comparator<PowerNumber>() {
+            @Override
+            public int compare(PowerNumber p1, PowerNumber p2) {
+                if (p1.getValue() > p2.getValue()) {
+                    return 1;
+                } else if (p1.getValue() < p2.getValue()){
+                    return -1;
+                } else {
+                    return (int)(p1.getBase() - p2.getBase());
+                }
+            }
+        });
+
+        /* Use a hashset to save value of visited power number to avoid duplicated data. */
+        Set<Long> visited = new HashSet<>();
+        final PowerNumber initial = new PowerNumber(2L, 2L);
+        queue.offer(initial);
+
+        /* Similar with BFS, two branches are base + 1 and power + 1. Stop the search when there are index + 1 power numbers are found. */
+        while (!queue.isEmpty()) {
+            PowerNumber currentNumber = queue.poll();
+            long value = currentNumber.getValue();
+            visited.add(value);
+
+            if (visited.size() == index + 1) {
+                powerNumber = Optional.of(value);
+                break;
+            }
+
+            long base = currentNumber.getBase();
+            long power = currentNumber.getPower();
+
+            PowerNumber baseIncreased = new PowerNumber(base + 1, power);
+            PowerNumber powerIncreased = new PowerNumber(base, power + 1);
+
+            /* Check whether the value of power number is appeared before or not to avoid further sorting operations. */
+            if (!visited.contains(baseIncreased.getValue())) {
+                queue.offer(baseIncreased);
+            }
+            if (!visited.contains(powerIncreased.getValue())) {
+                queue.offer(powerIncreased);
+            }
+        }
+        return powerNumber;
+    }
+
+    public static void main(String[] args) {
+        Solution solution = new Solution();
+
+        try {
+            final Optional<Long> powerNumber = solution.getPowerNumber(10000);
+            if (powerNumber.isPresent()) {
+                System.out.println(powerNumber.get());
+            }
+        } catch (Exception e) {
+            System.out.println("Exception in process of getting power number");
+        }
+    }
+}
