@@ -1,15 +1,28 @@
-package OA;
-
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+/* Define a custom exception to handle the situation when hashset is full. */
+class OutOfMemoryException extends Exception {
+    public OutOfMemoryException(final String message) {
+        super(message);
+    }
+}
+
+/* Define a custom exception to handle the situation when power number is larger than
+the boundary of Long. */
+class OutOfLongBoundaryException extends Exception {
+    public OutOfLongBoundaryException(final String message) {
+        super(message);
+    }
+}
+
 /**
-* The class contains three attributes that represent the base, power and value of the power number.
+ * The class contains three attributes that represent the base, power and value of the power number.
  * The class also saves the relationship among base, power and value.
-*/
+ */
 class PowerNumber {
     private long base;
     private long power;
@@ -18,7 +31,7 @@ class PowerNumber {
     public PowerNumber(long base, long power) {
         this.base = base;
         this.power = power;
-        this.value = (long)Math.pow(base, power);
+        this.value = (long) Math.pow(base, power);
     }
 
     public long getBase() {
@@ -34,7 +47,7 @@ class PowerNumber {
     }
 }
 
-public class Solution {
+public class Test {
     /* The base of power numbers starts from 2. */
     private static final long BASE_INITIAL = 2L;
     /* The power of power numbers starts from 2. */
@@ -45,11 +58,13 @@ public class Solution {
      * @param index The input index that is given by users.
      * @return Optional<Long> The result contains value of power number by input index, or empty if there is an exception.
      */
-    public Optional<Long> getPowerNumber(final long index) throws Exception {
+    public Optional<Long> getPowerNumber(final long index) throws IllegalArgumentException,
+            OutOfLongBoundaryException, OutOfMemoryException {
         Optional<Long> powerNumber = Optional.empty();
 
+        /* Throws exception if input parameter is less than 0. */
         if (index < 0L) {
-            throw new Exception("Input is not valid");
+            throw new IllegalArgumentException("Invalid input parameter.");
         }
 
         /* Define a min-heap that sort the power numbers by their values.
@@ -72,12 +87,19 @@ public class Solution {
         final PowerNumber initial = new PowerNumber(2L, 2L);
         queue.offer(initial);
 
-        /* Similar with BFS, two branches are base + 1 and power + 1. Stop the search when there are index + 1 power numbers are found. */
+        /* Similar with BFS, two branches are base + 1 and power + 1. */
         while (!queue.isEmpty()) {
             PowerNumber currentNumber = queue.poll();
             long value = currentNumber.getValue();
-            visited.add(value);
 
+            try {
+                visited.add(value);
+            } catch (OutOfMemoryError E) {
+                throw new OutOfMemoryException("HashSet memory overflow.");
+            }
+
+            /* When index + 1 power numbers have been found, since index starts from 0, so return 
+            * the indexth power number, and stop the program. */
             if (visited.size() == index + 1) {
                 powerNumber = Optional.of(value);
                 break;
@@ -86,30 +108,38 @@ public class Solution {
             long base = currentNumber.getBase();
             long power = currentNumber.getPower();
 
-            PowerNumber baseIncreased = new PowerNumber(base + 1, power);
-            PowerNumber powerIncreased = new PowerNumber(base, power + 1);
+            try {
+                PowerNumber baseIncreased = new PowerNumber(base + 1, power);
+                PowerNumber powerIncreased = new PowerNumber(base, power + 1);
 
-            /* Check whether the value of power number is appeared before or not to avoid further sorting operations. */
-            if (!visited.contains(baseIncreased.getValue())) {
-                queue.offer(baseIncreased);
-            }
-            if (!visited.contains(powerIncreased.getValue())) {
-                queue.offer(powerIncreased);
+                /* Check whether the value of power number is appeared before or not to avoid further sorting operations. */
+                if (!visited.contains(baseIncreased.getValue())) {
+                    queue.offer(baseIncreased);
+                }
+                if (!visited.contains(powerIncreased.getValue())) {
+                    queue.offer(powerIncreased);
+                }
+            } catch (OutOfMemoryError E) {
+                throw new OutOfLongBoundaryException("Power number value overflow.");
             }
         }
         return powerNumber;
     }
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
+        Test solution = new Test();
 
         try {
-            final Optional<Long> powerNumber = solution.getPowerNumber(10000);
+            final Optional<Long> powerNumber = solution.getPowerNumber(1000000);
             if (powerNumber.isPresent()) {
                 System.out.println(powerNumber.get());
             }
-        } catch (Exception e) {
-            System.out.println("Exception in process of getting power number");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        } catch (OutOfMemoryException e) {
+            System.out.println(e.getMessage());
+        } catch (OutOfLongBoundaryException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
